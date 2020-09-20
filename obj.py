@@ -82,7 +82,7 @@ class SrvCtrl(object):
     def __init__(self, name):
         self.Name = name
         self.CmdBuf = ""
-        self.Port = serial.Serial('/dev/ttyAMA0', 115200, timeout = 0.06)              # LINUXHOZ: serial.Serial('/dev/ttyAMA0', 115200, timeout = 1) comport was 3
+        self.Port = serial.Serial('/dev/serial0', 115200, timeout = 0.06)              # LINUXHOZ: serial.Serial('/dev/ttyAMA0', 115200, timeout = 1) comport was 3
 
     def SetToMove(self, cmd_string):
         """ A paraméterként megadott stringet mindíg hozzáadjuk a CmdBuf-hoz """

@@ -42,44 +42,47 @@ EVENT = None
 
     
 def JoyButtonHandler(event):
+    """Mapping is according to the default driver. Connection trough bluetoothctl, no ds4drv installed
+    joystick is recognised as 8 axes / 13 buttons, touchpad not implemented, gyro axes not implemented"""
     #print "DIAG: EVENT = JoyButtonHandler"
     for i in range(funct.ds4.get_numbuttons()):
         btn_ID = funct.ds4.get_button(i)                            
-        if btn_ID == 1:                                                         # a button was pushed
+        if btn_ID == 1:                                                             # a button was pushed
             if i == 0: 
-                event = "SQUARE"
-            elif i == 1: 
                 event = "CROSS"
-            elif i == 2: 
+            elif i == 1: 
                 event = "CIRCLE"
+            elif i == 2: 
+                event = "TRIANGLE"                                                  # used for SHIFT
+                EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)                
             elif i == 3: 
-                event = "TRIANGLE"
-                EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)
+                event = "SQUARE"
             elif i == 4: 
                 event = "L1"
             elif i == 5: 
                 event = "R1"
-                EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)
+                #EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)     # Not used
             elif i == 6: 
                 event = "L2"
             elif i == 7: 
                 event = "R2"
-                EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)
+                #EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)     # Not used
             elif i == 8: 
                 event = "SHARE"
             elif i == 9: 
-                event = "OPTIONS"
+                event = "OPTIONS"                                                    # used for change operation modes
                 EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)
             elif i == 10: 
-                event = "LEFT THUMB. BTN."
-            elif i == 11: 
-                event = "RIGHT THUMB. BTN."
-            elif i == 12: 
                 event = "PSBTN"
-                EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)
+                EventDispatch(event, modeVal, IK_in, AxisBuffer, flags, auxVal)      # used to return "READY" or "IDLE" operation mode
+            elif i == 11: 
+                event = "LEFT THUMB. BTN."
+            elif i == 12: 
+                event = "RIGHT THUMB. BTN."
+            """
             elif i == 13: 
-                event = "TOUCH SCREEN"
-    
+                event = "TOUCH SCREEN"                                              # Not implemented
+            """
     
 def ThumbJoyHandler(jbuff, axisbuff, flag_dict, event):
     axisbuff["axis_lx"] = funct.ds4.get_axis(0) * -1                                # Bal oldali thumbjoy az x és y tengel menti forgásokat adja
@@ -118,7 +121,7 @@ def ThumbJoyHandler(jbuff, axisbuff, flag_dict, event):
         else:
             flag_dict["flag_thumbJoyStateChng_ly"] = False
 
-    axisbuff["axis_rx"] = funct.ds4.get_axis(2) * -1    
+    axisbuff["axis_rx"] = funct.ds4.get_axis(3) * -1    
     if abs(axisbuff["axis_rx"]) < 0.1:
         if axisbuff["rx_center"] == False:
             axisbuff["axis_rx"] = 0
@@ -136,7 +139,7 @@ def ThumbJoyHandler(jbuff, axisbuff, flag_dict, event):
         else:
             flag_dict["flag_thumbJoyStateChng_rx"] = False
 
-    axisbuff["axis_ry"] = funct.ds4.get_axis(3)
+    axisbuff["axis_ry"] = funct.ds4.get_axis(4)
     if abs(axisbuff["axis_ry"]) < 0.1:
         if axisbuff["ry_center"] == False:
             axisbuff["axis_ry"] = 0
@@ -155,7 +158,7 @@ def ThumbJoyHandler(jbuff, axisbuff, flag_dict, event):
             flag_dict["flag_thumbJoyStateChng_ry"] = False
     
     
-    axisbuff["axis_R2"] = funct.ds4.get_axis(4) + 1
+    axisbuff["axis_R2"] = funct.ds4.get_axis(5) + 1
     if axisbuff["axis_R2"] < 0.1:
         if axisbuff["R2_center"] == False:
             axisbuff["axis_R2"] = 0
@@ -191,7 +194,7 @@ def EventSource():
             pass
             
         elif event.type == funct.pygame.JOYAXISMOTION:
-            time.sleep(0.02) # szuresi kiserlet joymozgas was 0.15, was 0,1
+            #time.sleep(0.02) # szuresi kiserlet joymozgas was 0.15, was 0,1    # LINUS verzióbn a késleltetés szaggatottá teszi a mozgást ezért mellőzve
             ThumbJoyHandler(JoyBuffer, AxisBuffer, flags, EVENT)
     
     
