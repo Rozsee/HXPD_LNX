@@ -102,13 +102,13 @@ def SetIdlePos(kematox, mode):
         IK.IK_SixLeg()
         kematox.MoveSixLeg(1500, "support")
 
-def SetReadyPos(kematox, mode):
+def SetReadyPos(kematox, mode, aux):
     """Default values for ready stance "D"=225, "z"=110"""
     if mode == "set":
         """STEP 1 - Robor lift"""
         IK.IK_in["z"] = 110.0
         IK.IK_SixLeg()
-        kematox.MoveSixLeg(1000, "swing")
+        kematox.MoveSixLeg(750, "swing")
         """STEP 2 - TRIPOD A lift legs"""
         IK.IK_in["POS_Z"] = -50.0
         IK.IK_Tripod_A("support")                       # A "swing" az IK_in_for Swing- et használja....
@@ -144,6 +144,9 @@ def SetReadyPos(kematox, mode):
         IK.IK_in["POS_Z"] = 0
         IK.IK_Tripod_B("support")                       
         kematox.MoveTripodB("default", "swing", 500)
+
+        aux["stanceVal"] = "default"
+        
     elif mode == "return":
         """STEP 1 - return to default "z" at no matter what "D" value"""
         IK.IK_in["POS_Z"] = 0
@@ -167,12 +170,68 @@ def SetReadyPos(kematox, mode):
         IK.IK_Tripod_B("support")                       
         kematox.MoveTripodB("default", "swing", 500)
 
-def IncreaseStance():
-    pass
+        aux["stanceVal"] = "default"
 
-def DecresaeStance():
-    pass
-    
+def IncreaseStance(kematox):
+    """Increase stance by 30mm """
+    """STEP 1 - TRIPOD A lift legs"""
+    IK.IK_in["POS_Z"] = -25.0
+    IK.IK_Tripod_A("support")                       # A "swing" az IK_in_for Swing- et használja....                     
+    kematox.MoveTripodA("default", "swing", 500)
+    """STEP 2 - TRIPOD A lower legs"""
+    IK.IK_in["D"] = 255.0
+    IK.IK_in["POS_Z"] = 0
+    IK.IK_Tripod_A("support")                     
+    kematox.MoveTripodA("default", "swing", 500)
+    """STEP 4 - TRIPOD B lift legs"""
+    IK.IK_in["D"] = 225.0
+    IK.IK_in["POS_Z"] = -25.0
+    IK.IK_Tripod_B("support")                     
+    kematox.MoveTripodB("default", "swing", 500)
+    """STEP 5 - TRIPOD B lower legs"""
+    IK.IK_in["D"] = 255.0
+    IK.IK_in["POS_Z"] = 0
+    IK.IK_Tripod_B("support")                     
+    kematox.MoveTripodB("default", "swing", 500)
+    """STEP 6 - TRIPOD A lift legs again to release stress in servos"""
+    IK.IK_in["POS_Z"] = -25.0
+    IK.IK_Tripod_A("support")                       # A "swing" az IK_in_for Swing- et használja....                     
+    kematox.MoveTripodA("default", "swing", 500)
+    """STEP 7 - TRIPOD A lower legs"""
+    IK.IK_in["POS_Z"] = 0
+    IK.IK_Tripod_A("support")                     
+    kematox.MoveTripodA("default", "swing", 500)
+    """STEP 8 - TRIPOD B lift legs again to release stress in servos"""
+    IK.IK_in["POS_Z"] = -25.0
+    IK.IK_Tripod_B("support")                     
+    kematox.MoveTripodB("default", "swing", 500)
+    """STEP 9 - TRIPOD B release legs"""
+    IK.IK_in["POS_Z"] = 0
+    IK.IK_Tripod_B("support")                     
+    kematox.MoveTripodB("default", "swing", 500)
+
+def DecresaeStance(kematox):
+    """Deccrease stance by 30mm """
+    """STEP 1 - TRIPOD A lift legs"""
+    IK.IK_in["POS_Z"] = -25.0
+    IK.IK_Tripod_A("support")                       # A "swing" az IK_in_for Swing- et használja....                    
+    kematox.MoveTripodA("default", "swing", 500)
+    """STEP 2 - TRIPOD A lower legs"""
+    IK.IK_in["D"] = 195.0
+    IK.IK_in["POS_Z"] = 0
+    IK.IK_Tripod_A("support")                    
+    kematox.MoveTripodA("default", "swing", 500)
+    """STEP 3 - TRIPOD B lift legs"""
+    IK.IK_in["D"] = 225.0
+    IK.IK_in["POS_Z"] = -25.0
+    IK.IK_Tripod_B("support")                    
+    kematox.MoveTripodB("default", "swing", 500)
+    """STEP 4 - TRIPOD B lower legs"""
+    IK.IK_in["D"] = 195.0
+    IK.IK_in["POS_Z"] = 0
+    IK.IK_Tripod_B("support")                    
+    kematox.MoveTripodB("default", "swing", 500)
+
 def TripodWalk(kematox, walkval):                    
     """ Tripod walkpattern """
     def defineStepHeight():
@@ -244,6 +303,35 @@ def calc_POS_Z(input_dict, jbuff):
     
     pos_z = ((((z_maxVal - z_minVal) / (shifted_joy_maxVal -shifted_joy_minVal)) * jbuff["axis_R2"]) + z_minVal) - z_minVal
     return pos_z
+    
+def calc_HeadSidePos(jbuff):
+    HeadSide_minVal = 60.0
+    HeadSide_maxVal = 120.0
+    joy_minVal = -1.0
+    joy_maxVal = 1.0
+
+    HeadSidePosVal = ((((HeadSide_maxVal - HeadSide_minVal) / (joy_maxVal - joy_minVal)) * jbuff["left_x"] * -1) + HeadSide_minVal) - HeadSide_minVal       # A -1-el valo szorzas azert van, hogy a fej a joy mozgással megegyezo iranyba mozduljon, ne invertalva
+    print HeadSidePosVal
+    return HeadSidePosVal
+
+def calc_HeadBowPos(jbuff):
+    HeadBow_minVal = 50.0
+    HeadBow_maxVal = 140.0
+    joy_minVal = -1.0
+    joy_maxVal = 1.0
+
+    HeadBowPosVal = ((((HeadBow_maxVal - HeadBow_minVal) / (joy_maxVal - joy_minVal)) * jbuff["left_y"] * -1) + HeadBow_minVal) - HeadBow_minVal            # A -1-el valo szorzas azert van, hogy a fej a joy mozgással megegyezo iranyba mozduljon, ne invertalva
+    return HeadBowPosVal
+
+def calc_HeadTwistPos(jbuff):
+    HeadTwist_minVal = 60.0
+    HeadTwist_maxVal = 120.0
+    joy_minVal = -1.0
+    joy_maxVal = 1.0
+
+    HeadTwistPosVal = ((((HeadTwist_maxVal - HeadTwist_minVal) / (joy_maxVal - joy_minVal)) * jbuff["left_y"] * -1) + HeadTwist_minVal) - HeadTwist_minVal            # A -1-el valo szorzas azert van, hogy a fej a joy mozgással megegyezo iranyba mozduljon, ne invertalva
+    return HeadTwistPosVal
+    
     
 def CenterHead(kematox):
     IK.CalcHeadPos(HeadMovInput, HeadCalibrVal, HeadMovOutput)

@@ -145,7 +145,7 @@ class Hexapod(object):
                 "RF": {"name": "RF", "GPIO": 17, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur": 1, "id_tibia": 2, "id_coxa": 0, "chngd": 0},  # Right front leg (CON:2); femur = felsö labsz, tibia = also labsz.
                 "RM": {"name": "RM", "GPIO": 27, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur": 9, "id_tibia":10, "id_coxa": 8, "chngd": 0},  # Right middle leg (CON:4)
                 "RR": {"name": "RR", "GPIO": 22, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur": 5, "id_tibia": 6, "id_coxa": 4, "chngd": 0},  # Right rear leg (CON:6)
-                "LF": {"name": "LF", "GPIO": 23, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur":17, "id_tibia":18, "id_coxa":16, "chngd": 0},  # Left front leg (CON:1)
+                "LF": {"name": "LF", "GPIO": 23, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur":19, "id_tibia":18, "id_coxa":16, "chngd": 0},  # Left front leg (CON:1); id_femur was 17
                 "LM": {"name": "LM", "GPIO": 24, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur":25, "id_tibia":26, "id_coxa":24, "chngd": 0},  # Left middle leg (CON:3)
                 "LR": {"name": "LR", "GPIO": 25, "pos_femur": None, "pos_tibia": None, "pos_coxa": None, "id_femur":21, "id_tibia":22, "id_coxa":20, "chngd": 0},  # Left rear leg (CON:5)
                 "HEAD": {"name": "HEAD", "pos_head_bow": None, "pos_head_twst": None, "pos_head_siedMov": None, "id_head_bow": 31, "id_head_twst": 30, "id_head_sideMov": 29, "chngd": 0}                                                                              # Dict. for Head parameters
@@ -275,8 +275,8 @@ class Hexapod(object):
             self.SRVCTRL.ExecuteMove(movetime, "NoPoll")  
 
 
-    def MoveHead(self, HeadMovOutput, movetime):
-        self.TransferHeadPosToSrvoCtrl(HeadMovOutput, movetime)
+    def MoveHead(self, headservopos, movetime):
+        self.TransferHeadPosToSrvoCtrl(headservopos, movetime)
 
     """
     def LegFeetToGround(self, leg):

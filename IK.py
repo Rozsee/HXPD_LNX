@@ -8,11 +8,13 @@ LINUX VERSION use on RPi
 from math import sqrt, pow, degrees, radians, sin, cos, tan, acos, atan, atan2
 from copy import deepcopy
 
-IK_in = {"POS_X": 0.0, "POS_Y": 0.0, "POS_Z": 0.0, "ROT_X": 0.0, "ROT_Y": 0.0, "ROT_Z": 0.0, "D": 275.0, "z": 48.0} #225.0
-HeadMovInput = {"headBow": 90.0, "headTwist": 90.0, "headSide": 90.0}                                               # Head servo poziciók fokban megadva (bemenő paraméterek) 
-HeadMovOutput = {"pos_headBow": 0, "pos_headTwist": 0, "pos_headSide": 0}                                           # Head servo pozíciók ms-ba átszámolva (kimenő paraméterek)
-HeadCalibrVal = {"pos_headBow": 50, "pos_headTwist": -80, "pos_headSide": 50}                                       # Servo calibration values to add the calculated values
-IK_in_for_Swing = {"POS_X": 0 , "POS_Y": 0, "POS_Z": 0, "ROT_X": 0, "ROT_Y": 0, "ROT_Z": 0, "D": 225.0}             #225.0 is the default value 260 id for experimental purposes to cgange main stance
+IK_in = {"POS_X": 0.0, "POS_Y": 0.0, "POS_Z": 0.0, "ROT_X": 0.0, "ROT_Y": 0.0, "ROT_Z": 0.0, "D": 275.0, "z": 48.0}                     #225.0
+HeadMovInput = {"headBow_def": 90, "headTwist_def": 90, "headSide_def": 90,
+                "headBow_diff": 0, "headTwist_diff": 0, "headSide_diff":0,
+                "headBow_mod": 0, "headTwist_mod": 0, "headSide_mod":0}                                                                 # Head servo poziciók fokban megadva (kezdo, különbség, vegso ertek) (bemenő paraméterek) 
+HeadMovOutput = {"pos_headBow": 0, "pos_headTwist": 0, "pos_headSide": 0}                                                               # Head servo pozíciók ms-ba átszámolva (kimenő paraméterek)
+HeadCalibrVal = {"pos_headBow": 50, "pos_headTwist": -80, "pos_headSide": 50}                                                           # Servo calibration values to add the calculated values
+IK_in_for_Swing = {"POS_X": 0 , "POS_Y": 0, "POS_Z": 0, "ROT_X": 0, "ROT_Y": 0, "ROT_Z": 0, "D": 225.0}                                 #225.0 is the default value 260 id for experimental purposes to cgange main stance
 
 ConstantVal = { "dist_center_corncoxa": 121.0,
                 "dist_center_midcoxa": 101.0,
@@ -939,10 +941,19 @@ def CalcHeadPos(input, calibrationVal, output):
         else:
             return srvo_pos
 
-    output["pos_headBow"] = int(round(AngToMs(input["headBow"]))) + calibrationVal["pos_headBow"]
-    output["pos_headTwist"] = int(round(AngToMs(input["headTwist"]))) + calibrationVal["pos_headTwist"]
-    output["pos_headSide"] = int(round(AngToMs(input["headSide"]))) + calibrationVal["pos_headSide"]
+    input["headBow_mod"] = input["headBow_def"] + input["headBow_diff"]
+    input["headTwist_mod"] = input["headTwist_def"] + input["headTwist_diff"]
+    input["headSide_mod"] = input["headSide_def"] + input["headSide_diff"]
 
+    print input
+
+    output["pos_headBow"] = int(round(AngToMs(input["headBow_mod"]))) + calibrationVal["pos_headBow"]
+    output["pos_headTwist"] = int(round(AngToMs(input["headTwist_mod"]))) + calibrationVal["pos_headTwist"]
+    output["pos_headSide"] = int(round(AngToMs(input["headSide_mod"]))) + calibrationVal["pos_headSide"]
+
+    print output
+
+    
 #IK_Tripod_B("swing")
 #IK_SixLeg()
 #IK_Diag(IK_out)
