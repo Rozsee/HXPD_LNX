@@ -25,7 +25,8 @@ flags = {"position_reached": False,
          "return_to_Ready": False, "return_to_Idle": False,
          "flag_thumbJoyStateChng_lx": False, "flag_thumbJoyStateChng_ly": False, 
          "flag_thumbJoyStateChng_rx": False, "flag_thumbJoyStateChng_ry": False,
-         "flag_JoyStateChng_R2": False, "flag_shiftActivated": False, "flag_headModeSelected": False}
+         "flag_JoyStateChng_R2": False, "flag_shiftActivated": False, "flag_headModeSelected": False,
+         "flag_DPAD_center": False}
 JoyBuffer = {"left_x": 0.0, "left_y": 0.0, "right_x": 0.0, "right_y": 0.0, "axis_R2": 0.0}
 AxisBuffer ={
                 "axis_lx": 0.0, "axis_ly": 0.0, "axis_rx": 0.0, "axis_ry": 0.0, "axis_L2": 0.0, "axis_R2":0.0,
@@ -194,9 +195,11 @@ def EventSource():
         elif event.type == funct.pygame.JOYHATMOTION:           
             #funct.JoyHatHandler()
             hat_DIR = funct.ds4.get_hat(0)    
-            if hat_DIR == (-1,0):
-                print "RIGHT"
-                print str(auxVal["stanceVal"])                                               # LEFT
+            if hat_DIR == (0,0):
+                flags["flag_DPAD_center"] = True
+            
+            elif hat_DIR == (-1,0):                                               #LEFT                                        
+                flags["flag_DPAD_center"] = False
                 if auxVal["stanceVal"] == "default":
                     funct.DecresaeStance(kematox)
                     auxVal["stanceVal"] = "narrow"
@@ -207,6 +210,7 @@ def EventSource():
                     auxVal["stanceVal"] = "default"
 
             elif hat_DIR == (1,0):                                              # RIGHT
+                flags["flag_DPAD_center"] = False
                 if auxVal["stanceVal"] == "default":
                     funct.IncreaseStance(kematox)
                     auxVal["stanceVal"] = "wide"
@@ -215,6 +219,54 @@ def EventSource():
                     auxVal["stanceVal"] = "default"
                 elif auxVal["stanceVal"] == "wide":
                      print "MAIN: Upper stance limit reached"
+                     
+            elif hat_DIR == (0,1):                                              # UP
+                flags["flag_DPAD_center"] = False
+                if modeVal["mode"] == 3:                                        # Ez a funkció csak mode =3-ban (WALK) működjön.
+                    #set_POS_Z_for_Walk("UP", IK_in)
+                    while flags["flag_DPAD_center"] == False:
+                        
+                        if IK.IK_in["POS_Z"] < 123.5:                           # Limited from calculated max value (130)
+                            time.sleep(0.08)                                    # wait a bit
+                            IK.IK_in["POS_Z"] =  IK.IK_in["POS_Z"] + 3.25       # do z tanslation up
+                            print str(IK.IK_in["POS_Z"])
+                            IK.IK_SixLeg()
+                            kematox.MoveSixLeg(None, "support")
+                            breakCond = funct.pygame.event.wait()
+                            if breakCond.type == funct.pygame.JOYHATMOTION:
+                                break
+                            else:
+                                continue
+                        else:
+                            IK.IK_in["POS_Z"] =  123.5
+                            print "MAIN: POS_Z max. limit reached " + str(IK.IK_in["POS_Z"])     
+                            break
+                        
+                else:
+                    pass
+                        
+            elif hat_DIR == (0,-1):                                             # DOWN
+                flags["flag_DPAD_center"] = False
+                if modeVal["mode"] == 3:                                        # Ez a funkció csak mode =3-ban (WALK) működjön.
+                    while flags["flag_DPAD_center"] == False:
+                        
+                        if IK.IK_in["POS_Z"] > 6.5:                             # Limited from calculated min value (0)
+                            time.sleep(0.08)
+                            IK.IK_in["POS_Z"] =  IK.IK_in["POS_Z"] - 3.25       # do z tanslation up
+                            print str(IK.IK_in["POS_Z"])
+                            IK.IK_SixLeg()
+                            kematox.MoveSixLeg(None, "support")
+                            breakCond = funct.pygame.event.wait()
+                            if breakCond.type == funct.pygame.JOYHATMOTION:
+                                break
+                            else:
+                                continue
+                        else:
+                            IK.IK_in["POS_Z"] =  6.5
+                            print "MAIN: POS_Z min. limit reached " + str(IK.IK_in["POS_Z"])
+                            break
+                else:
+                    pass
             
         elif event.type == funct.pygame.JOYAXISMOTION:
             #time.sleep(0.02) # szuresi kiserlet joymozgas was 0.15, was 0,1    # LINUS verzióbn a késleltetés szaggatottá teszi a mozgást ezért mellőzve
@@ -274,8 +326,8 @@ def EventDispatch(event, mode_dict, direction_dict, jbuff, flag_dict, auxval, he
                 direction_dict["POS_Y"] = 50 * jbuff["right_y"]
                 direction_dict["POS_Z"] = funct.calc_POS_Z(IK_in, jbuff)
 
-                head_in["headSide_diff"] = funct.calc_HeadSidePos(jbuff)                                   # uses jbuff["left_x"]
-                head_in["headBow_diff"] = funct.calc_HeadBowPos(jbuff)                                     # uses jbuff["left_y"]
+                head_in["headSide_diff"] = funct.calc_HeadSidePos(jbuff)                                     # uses jbuff["left_x"]
+                head_in["headBow_diff"] = funct.calc_HeadBowPos(jbuff)                                       # uses jbuff["left_y"]
 
                 flag_dict["position_reached"] = False
                 
@@ -294,14 +346,14 @@ def EventDispatch(event, mode_dict, direction_dict, jbuff, flag_dict, auxval, he
                 direction_dict["POS_X"] = 50 * jbuff["right_x"] 
                 direction_dict["POS_Y"] = 50 * jbuff["right_y"]
                 direction_dict["ROT_Z"] = 20 * jbuff["left_x"]   
-                direction_dict["POS_Z"] = funct.calc_POS_Z(IK_in, jbuff)
+                #direction_dict["POS_Z"] = funct.calc_POS_Z(IK_in, jbuff)                                   # This section is commented out. POS_Z is modified by D-PAD UP/DOWN instead of R2 button during WALK mode  
                 flag_dict["position_reached"] = False
             elif flag_dict["flag_shiftActivated"] == True:  
                 direction_dict["POS_X"] = 50 * jbuff["right_x"] 
                 direction_dict["POS_Y"] = 50 * jbuff["right_y"]
                 direction_dict["ROT_X"] = 10 * jbuff["left_y"]
                 direction_dict["ROT_Y"] = 10 * jbuff["left_x"] 
-                direction_dict["POS_Z"] = funct.calc_POS_Z(IK_in, jbuff)
+                #direction_dict["POS_Z"] = funct.calc_POS_Z(IK_in, jbuff)                                   # This section is commented out. POS_Z is modified by D-PAD UP/DOWN instead of R2 button during WALK mode  
                 flag_dict["position_reached"] = False
 
     elif (event == "TRIANGLE"):
@@ -385,7 +437,10 @@ def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
         
         
     elif mode_dict["mode"] == 3: # WALK
-        WalkVector = IK.CalcWalkVector()      
+        time.sleep(0.05)
+        WalkVector = IK.CalcWalkVector()
+        print WalkVector
+        print "POS_X: " + str(IK.IK_in["POS_X"]) + "POS_Y: " + str(IK.IK_in["POS_Y"]) 
         #if ((abs(IK.IK_in["ROT_Z"]) > 0 and IK.IK_in["POS_Z"]) or (IK.IK_in["ROT_Y"] > 0 and IK.IK_in["POS_Z"] > 0) or (WalkVector > 0 and IK.IK_in["POS_Z"] > 0) or (WalkVector > 0 and IK.IK_in["ROT_Y"] > 0 and IK.IK_in["POS_Z"] > 0)):
         if ((abs(IK.IK_in["ROT_Z"]) > 0 and IK.IK_in["POS_Z"]) or (WalkVector > 0 and IK.IK_in["POS_Z"] > 0) or (WalkVector > 0 and IK.IK_in["ROT_Y"] > 0 and IK.IK_in["POS_Z"] > 0)):
             print "WALK"

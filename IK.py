@@ -945,13 +945,9 @@ def CalcHeadPos(input, calibrationVal, output):
     input["headTwist_mod"] = input["headTwist_def"] + input["headTwist_diff"]
     input["headSide_mod"] = input["headSide_def"] + input["headSide_diff"]
 
-    print input
-
     output["pos_headBow"] = int(round(AngToMs(input["headBow_mod"]))) + calibrationVal["pos_headBow"]
     output["pos_headTwist"] = int(round(AngToMs(input["headTwist_mod"]))) + calibrationVal["pos_headTwist"]
     output["pos_headSide"] = int(round(AngToMs(input["headSide_mod"]))) + calibrationVal["pos_headSide"]
-
-    print output
 
     
 #IK_Tripod_B("swing")
