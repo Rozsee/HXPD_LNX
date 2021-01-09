@@ -26,7 +26,7 @@ flags = {"position_reached": False,
          "flag_thumbJoyStateChng_lx": False, "flag_thumbJoyStateChng_ly": False, 
          "flag_thumbJoyStateChng_rx": False, "flag_thumbJoyStateChng_ry": False,
          "flag_JoyStateChng_R2": False, "flag_shiftActivated": False, "flag_headModeSelected": False,
-         "flag_DPAD_center": False}
+         "flag_DPAD_center": False, "flag_waswalking": False}
 JoyBuffer = {"left_x": 0.0, "left_y": 0.0, "right_x": 0.0, "right_y": 0.0, "axis_R2": 0.0}
 AxisBuffer ={
                 "axis_lx": 0.0, "axis_ly": 0.0, "axis_rx": 0.0, "axis_ry": 0.0, "axis_L2": 0.0, "axis_R2":0.0,
@@ -439,16 +439,21 @@ def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
     elif mode_dict["mode"] == 3: # WALK
         time.sleep(0.05)
         WalkVector = IK.CalcWalkVector()
-        print WalkVector
-        print "POS_X: " + str(IK.IK_in["POS_X"]) + "POS_Y: " + str(IK.IK_in["POS_Y"]) 
+        #print "POS_X: " + str(IK.IK_in["POS_X"]) + "POS_Y: " + str(IK.IK_in["POS_Y"]) 
         #if ((abs(IK.IK_in["ROT_Z"]) > 0 and IK.IK_in["POS_Z"]) or (IK.IK_in["ROT_Y"] > 0 and IK.IK_in["POS_Z"] > 0) or (WalkVector > 0 and IK.IK_in["POS_Z"] > 0) or (WalkVector > 0 and IK.IK_in["ROT_Y"] > 0 and IK.IK_in["POS_Z"] > 0)):
         if ((abs(IK.IK_in["ROT_Z"]) > 0 and IK.IK_in["POS_Z"]) or (WalkVector > 0 and IK.IK_in["POS_Z"] > 0) or (WalkVector > 0 and IK.IK_in["ROT_Y"] > 0 and IK.IK_in["POS_Z"] > 0)):
-            print "WALK"
-            funct.TripodWalk(kematox, walkVal)
+            #print "WALK"
+            funct.TripodWalk(kematox, walkVal, "Walk")
+            flag_dict["flag_waswalking"] = True
             
         elif (IK.IK_in["POS_Z"] > 0 or IK.IK_in["ROT_Y"] > 0 or WalkVector >0 or (IK.IK_in["ROT_Y"] > 0 and WalkVector >0) or (IK.IK_in["POS_Z"] == 0 and IK.IK_in["ROT_Y"] == 0 and WalkVector == 0)): 
             """Akkor is STATIC legyen a mód, ha minden 0 -> visszatérjen a robot alaphelyzetbe """
-            print "STATIC"
+            #print "STATIC"
+            
+            if flag_dict["flag_waswalking"] == True:
+                flag_dict["flag_waswalking"] = False
+                funct.TripodWalk(kematox, walkVal, "Reset")
+            
             if flag_dict["position_reached"] == False:
                 IK.IK_SixLeg()
                 kematox.MoveSixLeg(None, "support")

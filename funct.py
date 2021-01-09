@@ -232,7 +232,7 @@ def DecresaeStance(kematox):
     IK.IK_Tripod_B("support")                    
     kematox.MoveTripodB("default", "swing", 500)
 
-def TripodWalk(kematox, walkval):                    
+def TripodWalk(kematox, walkval, mode):                    
     """ Tripod walkpattern """
     def defineStepHeight():
         """ check POS_Z value to deifne step high. In idle pos no walking allowed,
@@ -249,63 +249,94 @@ def TripodWalk(kematox, walkval):
         elif IK.IK_in["POS_Z"] > 65:                        # z lehetséges érétkei a pos_Hitec_to_JX.xls-ben találhatóak.
             stepHeight = IK.IK_in["POS_Z"] - 40.0                        
             return stepHeight
-
-    if walkval["tripod_step_1_complete"] == False:             
-        # 1. TRIPOD A support body and translates
-        IK.IK_Tripod_A("support")
-        kematox.MoveTripodA("default", "support", 500)      # time was 750
+    
+    if mode == "Walk":
+        if walkval["tripod_step_1_complete"] == False:             
+            # 1. TRIPOD A support body and translates
+            IK.IK_Tripod_A("support")
+            kematox.MoveTripodA("default", "support", 500)      # time was 750
+                
+            # 2. TRIPOD B swigns -> raise and center TRIPOD B
+            z_saved = IK.IK_in["POS_Z"]
+            x_saved = IK.IK_in["POS_X"]
+            y_saved = IK.IK_in["POS_Y"]
+            rotz_saved = IK.IK_in["ROT_Z"]
+            IK.IK_in["POS_Z"] = defineStepHeight()
+            IK.IK_in["POS_X"] = 0.0
+            IK.IK_in["POS_Y"] = 0.0
+            IK.IK_in["ROT_Z"] = 0.0
+            IK.IK_Tripod_B("support")                           # !!! swing-nél a még a régi IK dict van használatban !!!
+            kematox.MoveTripodB("default", "swing", 500)
+                
+            # 3. TRIPOD B swings -> lowering TRIPOD B
+            IK.IK_in["POS_Z"] = z_saved
             
-        # 2. TRIPOD B swigns -> raise and center TRIPOD B
+            IK.IK_in["POS_X"] = x_saved * -1                    # a nagyobb lépés érdekében nem 0-ra (alapállapotba) hozzuk vissza a lábat, hanem a x, y pozició "tükörképére"...
+            IK.IK_in["POS_Y"] = y_saved * -1
+            
+            IK.IK_Tripod_B("support")                           # !!! swing-nél a még a régi IK dict van használatban !!!
+            kematox.MoveTripodB("default", "swing", 500)        #750
+            
+            IK.IK_in["POS_X"] = x_saved                        # rewrite original POS_X and POS_Y values to be able to calculate calcVector
+            IK.IK_in["POS_Y"] = y_saved
+            IK.IK_in["ROT_Z"] = rotz_saved
+            
+            walkval["tripod_step_1_complete"] = True
+            
+        elif walkval["tripod_step_1_complete"] == True:
+            # 1. TRIPOD B support body and translates
+            IK.IK_Tripod_B("support")
+            kematox.MoveTripodB("default", "support", 500)
+                        
+            # 2. TRIPOD A swigns -> raise TRIPOD A
+            z_saved = IK.IK_in["POS_Z"]
+            x_saved = IK.IK_in["POS_X"]
+            y_saved = IK.IK_in["POS_Y"]
+            rotz_saved = IK.IK_in["ROT_Z"]
+            IK.IK_in["POS_Z"] = defineStepHeight()
+            IK.IK_in["POS_X"] = 0.0                                 # new
+            IK.IK_in["POS_Y"] = 0.0
+            IK.IK_in["ROT_Z"] = 0.0
+            IK.IK_Tripod_A("support")                             # !!! swing-nél a még a régi IK dict van használatban !!!
+            kematox.MoveTripodA("default", "swing", 500)
+                
+            # 3. TRIPOD A swings -> lowering TRIPOD A
+            IK.IK_in["POS_Z"] = z_saved
+            
+            IK.IK_in["POS_X"] = x_saved * -1                    # a nagyobb lépés érdekében nem 0-ra (alapállapotba) hozzuk vissza a lábat, hanem a x, y pozició "tükörképére"...
+            IK.IK_in["POS_Y"] = y_saved * -1
+            
+            IK.IK_Tripod_A("support")                             # !!! swing-nél a még a régi IK dict van használatban !!!
+            kematox.MoveTripodA("default", "swing", 500)         #750
+            
+            IK.IK_in["POS_X"] = x_saved
+            IK.IK_in["POS_Y"] = y_saved
+            IK.IK_in["ROT_Z"] = rotz_saved
+            
+            walkval["tripod_step_1_complete"] = False
+            
+    if mode == "Reset":
+    
         z_saved = IK.IK_in["POS_Z"]
-        x_saved = IK.IK_in["POS_X"]
-        y_saved = IK.IK_in["POS_Y"]
-        rotz_saved = IK.IK_in["ROT_Z"]
+    
         IK.IK_in["POS_Z"] = defineStepHeight()
         IK.IK_in["POS_X"] = 0.0
         IK.IK_in["POS_Y"] = 0.0
         IK.IK_in["ROT_Z"] = 0.0
         IK.IK_Tripod_B("support")                           # !!! swing-nél a még a régi IK dict van használatban !!!
         kematox.MoveTripodB("default", "swing", 500)
-            
-        # 3. TRIPOD B swings -> lowering TRIPOD B
+        
         IK.IK_in["POS_Z"] = z_saved
         IK.IK_Tripod_B("support")                           # !!! swing-nél a még a régi IK dict van használatban !!!
-        kematox.MoveTripodB("default", "swing", 500)        #750
+        kematox.MoveTripodB("default", "swing", 500) 
         
-        IK.IK_in["POS_X"] = x_saved                        # rewrite original POS_X and POS_Y values to be able to calculate calcVector
-        IK.IK_in["POS_Y"] = y_saved
-        IK.IK_in["ROT_Z"] = rotz_saved
-        
-        walkval["tripod_step_1_complete"] = True
-            
-    elif walkval["tripod_step_1_complete"] == True:
-        # 1. TRIPOD B support body and translates
-        IK.IK_Tripod_B("support")
-        kematox.MoveTripodB("default", "support", 500)
-                    
-        # 2. TRIPOD A swigns -> raise TRIPOD A
-        z_saved = IK.IK_in["POS_Z"]
-        x_saved = IK.IK_in["POS_X"]
-        y_saved = IK.IK_in["POS_Y"]
-        rotz_saved = IK.IK_in["ROT_Z"]
         IK.IK_in["POS_Z"] = defineStepHeight()
-        IK.IK_in["POS_X"] = 0.0                                 # new
-        IK.IK_in["POS_Y"] = 0.0
-        IK.IK_in["ROT_Z"] = 0.0
-        IK.IK_Tripod_A("support")                             # !!! swing-nél a még a régi IK dict van használatban !!!
+        IK.IK_Tripod_A("support")                           # !!! swing-nél a még a régi IK dict van használatban !!!
         kematox.MoveTripodA("default", "swing", 500)
-            
-        # 3. TRIPOD A swings -> lowering TRIPOD A
+        
         IK.IK_in["POS_Z"] = z_saved
-        IK.IK_Tripod_A("support")                             # !!! swing-nél a még a régi IK dict van használatban !!!
-        kematox.MoveTripodA("default", "swing", 500)         #750
-        
-        IK.IK_in["POS_X"] = x_saved
-        IK.IK_in["POS_Y"] = y_saved
-        IK.IK_in["ROT_Z"] = rotz_saved
-        
-        walkval["tripod_step_1_complete"] = False
-        
+        IK.IK_Tripod_A("support")                           # !!! swing-nél a még a régi IK dict van használatban !!!
+        kematox.MoveTripodA("default", "swing", 500)
 
 def calc_POS_Z(input_dict, jbuff):
     z_minVal = input_dict["z"]
