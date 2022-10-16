@@ -592,12 +592,12 @@ def IK(leg_ID, input_dict, const_dict, calibr_dict, output_dict):
         def PlausibleCheck(expr):
             if expr > 1:
                 expr = 1
-                print "IK_CALC: WARNING: MathLimit acos reached!"
+                print ("IK_CALC: WARNING: MathLimit acos reached!")
                 return expr
                 
             elif expr < -1:
                 expr = -1
-                print "IK_CALC: WARNING: MathLimit acos reached!"
+                print ("IK_CALC: WARNING: MathLimit acos reached!")
                 return expr
             
             else:
@@ -833,35 +833,35 @@ def IK(leg_ID, input_dict, const_dict, calibr_dict, output_dict):
     """
     
 def IK_Diag(output_dict):
-    print "RF"
-    print "Coxa pos.: " + str(output_dict["RF"]["pos_coxa"])
-    print "Femur pos.: " + str(output_dict["RF"]["pos_femur"])
-    print "Tibia pos.: " + str(output_dict["RF"]["pos_tibia"]) + "\n"
+    print ("RF")
+    print ("Coxa pos.: " + str(output_dict["RF"]["pos_coxa"]))
+    print ("Femur pos.: " + str(output_dict["RF"]["pos_femur"]))
+    print ("Tibia pos.: " + str(output_dict["RF"]["pos_tibia"]) + "\n")
     
-    print "RM"
-    print "Coxa pos.: " + str(output_dict["RM"]["pos_coxa"])
-    print "Femur pos.: " + str(output_dict["RM"]["pos_femur"])
-    print "Tibia pos.: " + str(output_dict["RM"]["pos_tibia"]) + "\n"
+    print ("RM")
+    print ("Coxa pos.: " + str(output_dict["RM"]["pos_coxa"]))
+    print ("Femur pos.: " + str(output_dict["RM"]["pos_femur"]))
+    print ("Tibia pos.: " + str(output_dict["RM"]["pos_tibia"]) + "\n")
     
-    print "RR"
-    print "Coxa pos.: " + str(output_dict["RR"]["pos_coxa"])
-    print "Femur pos.: " + str(output_dict["RR"]["pos_femur"])
-    print "Tibia pos.: " + str(output_dict["RR"]["pos_tibia"]) + "\n"
+    print ("RR")
+    print ("Coxa pos.: " + str(output_dict["RR"]["pos_coxa"]))
+    print ("Femur pos.: " + str(output_dict["RR"]["pos_femur"]))
+    print ("Tibia pos.: " + str(output_dict["RR"]["pos_tibia"]) + "\n")
     
-    print "LF"
-    print "Coxa pos.: " + str(output_dict["LF"]["pos_coxa"])
-    print "Femur pos.: " + str(output_dict["LF"]["pos_femur"])
-    print "Tibia pos.: " + str(output_dict["LF"]["pos_tibia"]) + "\n"
+    print ("LF")
+    print ("Coxa pos.: " + str(output_dict["LF"]["pos_coxa"]))
+    print ("Femur pos.: " + str(output_dict["LF"]["pos_femur"]))
+    print ("Tibia pos.: " + str(output_dict["LF"]["pos_tibia"]) + "\n")
     
-    print "LM"
-    print "Coxa pos.: " + str(output_dict["LM"]["pos_coxa"])
-    print "Femur pos.: " + str(output_dict["LM"]["pos_femur"])
-    print "Tibia pos.: " + str(output_dict["LM"]["pos_tibia"]) + "\n"
+    print ("LM")
+    print ("Coxa pos.: " + str(output_dict["LM"]["pos_coxa"]))
+    print ("Femur pos.: " + str(output_dict["LM"]["pos_femur"]))
+    print ("Tibia pos.: " + str(output_dict["LM"]["pos_tibia"]) + "\n")
     
-    print "LR"
-    print "Coxa pos.: " + str(output_dict["LR"]["pos_coxa"])
-    print "Femur pos.: " + str(output_dict["LR"]["pos_femur"])
-    print "Tibia pos.: " + str(output_dict["LR"]["pos_tibia"]) + "\n"
+    print ("LR")
+    print ("Coxa pos.: " + str(output_dict["LR"]["pos_coxa"]))
+    print ("Femur pos.: " + str(output_dict["LR"]["pos_femur"]))
+    print ("Tibia pos.: " + str(output_dict["LR"]["pos_tibia"]) + "\n")
     
     
 def IK_SixLeg():

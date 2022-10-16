@@ -99,32 +99,32 @@ class SrvCtrl(object):
             #print "SRVCTRL in: " + self.CmdBuf
             self.Port.write(self.CmdBuf)
             if querry == "Poll":
-                print "SSC32: Polling SRVCNTRL till movement finished... Using default movetime..."
+                print ("SSC32: Polling SRVCNTRL till movement finished... Using default movetime...")
                 while True:
                     self.Port = "Q\r\n"
                     resp = self.Port.readline()
-                    print "SRVCTRL out: " + resp
+                    print ("SRVCTRL out: " + resp)
                     if resp == ".":
                         break
                 self.CmdBuf = ""
             elif querry == "NoPoll":
-                print "SSC32: Polling turned OFF! Using default movetime..."
+                print ("SSC32: Polling turned OFF! Using default movetime...")
                 self.CmdBuf = ""
         else:
             self.CmdBuf = self.CmdBuf + "T" + str(MoveTime) + "\r\n"
             #print "SRVCTRL in: " + self.CmdBuf
             self.Port.write(self.CmdBuf)
             if querry == "Poll":
-                print "SSC32: Polling SRVCNTRL movement finished... Using preset/calc. movetime"
+                print ("SSC32: Polling SRVCNTRL movement finished... Using preset/calc. movetime")
                 while True:
                     self.Port.write("Q\r\n")
                     resp = self.Port.readline()
-                    print "SRVCTRL out: " + resp
+                    print ("SRVCTRL out: " + resp)
                     if resp == ".":
                         break
                 self.CmdBuf = ""     
             elif querry == "NoPoll":
-                print "SSC32: Polling turned OFF! Using preset/calc. movetime."
+                print ("SSC32: Polling turned OFF! Using preset/calc. movetime.")
                 self.CmdBuf = ""
 
 
@@ -250,7 +250,7 @@ class Hexapod(object):
             if mode == "support":
                 self.Update_Spdict(TripodA_MoveTable, "TripodA", "support", StepTime)
             elif mode == "swing":
-                print "Most emelem A-t!"
+                print ("Most emelem A-t!")
                 self.Update_Spdict(TripodA_MoveTable, "TripodA", "swing", StepTime / 2)
         elif gate == "wave":
             pass
@@ -259,10 +259,10 @@ class Hexapod(object):
     def MoveTripodB(self, gate, mode, StepTime):
         if gate == "default":
             if mode == "support":
-                print "Most tartom B-t!"
+                print ("Most tartom B-t!")
                 self.Update_Spdict(TripodB_MoveTable, "TripodB", "support", StepTime)
             elif mode == "swing":
-                print "Most emelem B-t!"
+                print ("Most emelem B-t!")
                 self.Update_Spdict(TripodB_MoveTable, "TripodB", "swing", StepTime / 2)
         elif gate == "wave":
             pass
@@ -271,7 +271,7 @@ class Hexapod(object):
     def TransferHeadPosToSrvoCtrl(self, headpos, movetime):
             self.HEAD.updatePosition(headpos)
             self.HEAD.SetHeadPosition()
-            print "mozgatoma a fejet"
+            print ("mozgatoma a fejet")
             self.SRVCTRL.ExecuteMove(movetime, "NoPoll")  
 
 

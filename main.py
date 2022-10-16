@@ -204,7 +204,7 @@ def EventSource():
                     funct.DecresaeStance(kematox)
                     auxVal["stanceVal"] = "narrow"
                 elif auxVal["stanceVal"] == "narrow":
-                    print "MAIN: Lower stance limit reached"
+                    print ("MAIN: Lower stance limit reached")
                 elif auxVal["stanceVal"] == "wide": 
                     funct.SetReadyPos(kematox, "set", auxVal)
                     auxVal["stanceVal"] = "default"
@@ -218,7 +218,7 @@ def EventSource():
                     funct.SetReadyPos(kematox, "set", auxVal)
                     auxVal["stanceVal"] = "default"
                 elif auxVal["stanceVal"] == "wide":
-                     print "MAIN: Upper stance limit reached"
+                     print ("MAIN: Upper stance limit reached")
                      
             elif hat_DIR == (0,1):                                              # UP
                 flags["flag_DPAD_center"] = False
@@ -229,7 +229,7 @@ def EventSource():
                         if IK.IK_in["POS_Z"] < 123.5:                           # Limited from calculated max value (130)
                             time.sleep(0.08)                                    # wait a bit
                             IK.IK_in["POS_Z"] =  IK.IK_in["POS_Z"] + 3.25       # do z tanslation up
-                            print str(IK.IK_in["POS_Z"])
+                            print (str(IK.IK_in["POS_Z"]))
                             IK.IK_SixLeg()
                             kematox.MoveSixLeg(None, "support")
                             breakCond = funct.pygame.event.wait()
@@ -239,7 +239,7 @@ def EventSource():
                                 continue
                         else:
                             IK.IK_in["POS_Z"] =  123.5
-                            print "MAIN: POS_Z max. limit reached " + str(IK.IK_in["POS_Z"])     
+                            print ("MAIN: POS_Z max. limit reached " + str(IK.IK_in["POS_Z"]))
                             break
                         
                 else:
@@ -253,7 +253,7 @@ def EventSource():
                         if IK.IK_in["POS_Z"] > 6.5:                             # Limited from calculated min value (0)
                             time.sleep(0.08)
                             IK.IK_in["POS_Z"] =  IK.IK_in["POS_Z"] - 3.25       # do z tanslation up
-                            print str(IK.IK_in["POS_Z"])
+                            print (str(IK.IK_in["POS_Z"]))
                             IK.IK_SixLeg()
                             kematox.MoveSixLeg(None, "support")
                             breakCond = funct.pygame.event.wait()
@@ -263,7 +263,7 @@ def EventSource():
                                 continue
                         else:
                             IK.IK_in["POS_Z"] =  6.5
-                            print "MAIN: POS_Z min. limit reached " + str(IK.IK_in["POS_Z"])
+                            print ("MAIN: POS_Z min. limit reached " + str(IK.IK_in["POS_Z"]))
                             break
                 else:
                     pass
@@ -275,23 +275,23 @@ def EventSource():
     
 def EventDispatch(event, mode_dict, direction_dict, jbuff, flag_dict, auxval, head_in):
     if (event == "OPTIONS"):                                                    # HA az OPTIONS gombot megnyomtak,
-        print "MAIN: Changing mode..."
+        print ("MAIN: Changing mode...")
         mode_dict["prev_mode"] = mode_dict["mode"]
         if mode_dict["prev_mode"] == 3:
             flag_dict["return_to_Ready"] = True
             
         mode_dict["mode"] = mode_dict["mode"] + 1                               # akkor a mode valtozot noveljuk
         if mode_dict["mode"] == 4:                                              # HA mode = 4 (ilyen mode nincs), akkor
-            print "MAIN: Returning to READY..."
+            print ("MAIN: Returning to READY...")
             mode_dict["mode"] = 1                                               # menjunk vissza READY mode-ba
             
         event = ""                                                              # EVENT valtozo torlese
-        print "MAIN: Mode is: " + str(mode_dict["mode"])
+        print ("MAIN: Mode is: " + str(mode_dict["mode"]))
         flag_dict["position_reached"] = False
         
     elif (event == "PSBTN"):                                                    # HA a PS gombot 1x megnyomjuk, akkor visszatérünk ready-be,                
         if mode_dict["mode"] == 1:
-            print "MAIN: Returning to IDLE..."
+            print ("MAIN: Returning to IDLE...")
             mode_dict["mode"] = 0
             event = ""
             flag_dict["return_to_Ready"] = False
@@ -299,7 +299,7 @@ def EventDispatch(event, mode_dict, direction_dict, jbuff, flag_dict, auxval, he
             flag_dict["position_reached"] = False
             
         else:
-            print "MAIN: Returning to READY..."
+            print ("MAIN: Returning to READY...")
             mode_dict["mode"] = 1
             event = ""
             flag_dict["return_to_Ready"] = True
@@ -360,34 +360,34 @@ def EventDispatch(event, mode_dict, direction_dict, jbuff, flag_dict, auxval, he
         if mode_dict["mode"] == 2 or 3:
             if flag_dict["flag_shiftActivated"] == False:
                 flag_dict["flag_shiftActivated"] = True
-                print "MAIN: SHIFT is ON"
+                print ("MAIN: SHIFT is ON")
             elif flag_dict["flag_shiftActivated"] == True:
                 flag_dict["flag_shiftActivated"] = False
-                print "MAIN: SHIFT is OFF"
+                print ("MAIN: SHIFT is OFF")
 
     elif (event == "CIRCLE"):
             if mode_dict["mode"] == 2 or 3:
                 if flag_dict["flag_headModeSelected"] == False:
                     flag_dict["flag_headModeSelected"] = True
-                    print "MAIN: Head mode is ON"
+                    print ("MAIN: Head mode is ON")
                 elif flag_dict["flag_headModeSelected"] == True:
                     flag_dict["flag_headModeSelected"] = False
-                    print "MAIN: Head mode is OFF"   
+                    print ("MAIN: Head mode is OFF")
 
 def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
     if mode_dict["mode"] == 0: # IDLE
         if flag_dict["position_reached"] == False:
             if flag_dict["return_to_Idle"] == True:
-                print "MAIN: Returning to IDLE"
+                print ("MAIN: Returning to IDLE")
                 funct.SetIdlePos(kematox, "return")
-                print "MAIN: IDLE position reached\n"
+                print ("MAIN: IDLE position reached\n")
                 flag_dict["return_to_Idle"] = False
                 flag_dict["position_reached"] = True
             
             elif flag_dict["return_to_Idle"] == False:
-                print "MAIN: MODE set to IDLE"                                  # ide még a fejet idle-be parancsot be kell szúrni
+                print ("MAIN: MODE set to IDLE")                                  # ide még a fejet idle-be parancsot be kell szúrni
                 funct.SetIdlePos(kematox, "set")
-                print "MAIN: IDLE position reached\n"
+                print ("MAIN: IDLE position reached\n")
                 flag_dict["position_reached"] = True
                 
         elif flag_dict["position_reached"] == True:
@@ -396,18 +396,18 @@ def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
     elif mode_dict["mode"] == 1: # READY
         if flag_dict["position_reached"] == False:
             if flag_dict["return_to_Ready"] == True:
-                print "MAIN: Returning to READY"
+                print ("MAIN: Returning to READY")
                 funct.SetReadyPos(kematox, "return", auxVal)
                 funct.CenterHead(kematox)
-                print "MAIN: READY position reached\n"
+                print ("MAIN: READY position reached\n")
                 flag_dict["return_to_Ready"] = False
                 flag_dict["position_reached"] = True
                 
             elif flag_dict["return_to_Ready"] == False:
-                print "MAIN: MODE set to READY"
+                print ("MAIN: MODE set to READY")
                 funct.SetReadyPos(kematox, "set", auxVal)
                 funct.CenterHead(kematox)
-                print "MAIN: READY position reached\n"
+                print ("MAIN: READY position reached\n")
                 flag_dict["position_reached"] = True
                 
         elif flag_dict["position_reached"] == True:
@@ -420,7 +420,7 @@ def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
                 kematox.MoveSixLeg(None, "support")
                 #IK.IK_Diag(IK.IK_out)
                 flag_dict["position_reached"] = True
-                print "DIAG: MOVEMENT READY"
+                print ("DIAG: MOVEMENT READY")
             elif flag_dict["position_reached"] == True:
                 pass
         elif flag_dict["flag_headModeSelected"] == True:
@@ -431,7 +431,7 @@ def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
                 kematox.MoveHead(HeadMovOutput, 500)
                 #IK.IK_Diag(IK.IK_out)
                 flag_dict["position_reached"] = True
-                print "DIAG: MOVEMENT READY"
+                print ("DIAG: MOVEMENT READY")
             elif flag_dict["position_reached"] == True:
                 pass
         
@@ -458,7 +458,7 @@ def EventExecute(event, mode_dict, flag_dict, auxval, walkval):
                 IK.IK_SixLeg()
                 kematox.MoveSixLeg(None, "support")
                 flag_dict["position_reached"] = True
-                print "DIAG: MOVEMENT READY"
+                print ("DIAG: MOVEMENT READY")
             elif flag_dict["position_reached"] == True:
                 pass
 
