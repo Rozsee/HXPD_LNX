@@ -23,6 +23,7 @@ def InitDS4():
     """ DualShock 4 init a pygmae joystick funkcióit alkalmazva"""
     print ("FUNCT: Looking for joystick...")
     pygame.init()
+    print("Pygame init status = " +str(pygame.get_init()))
     global ds4
     ds4 = pygame.joystick.Joystick(0)                                           # Controller init
     ds4.init() 
@@ -41,7 +42,7 @@ def StopPrg(kematox):
     kematox.SRVCTRL.Port.close()
     print ("FUNCT: Serial port released...")
     print ("FUNCT: Exiting...")
-    sys.exit()
+    sys.exit(0)
 
 def LookForDevices(kematox):
     if ds4.get_init() == True:
@@ -54,12 +55,13 @@ def LookForDevices(kematox):
     else:
         print ("FUNCT: Joystick not found, exiting...")
         StopPrg(kematox)
-    kematox.SRVCTRL.Port.write("VER\r\n")
+    kematox.SRVCTRL.Port.write("VER\r\n".encode())
     version = kematox.SRVCTRL.Port.readline()
-    kematox.SRVCTRL.Port.write("Q\r\n")
-    resp = kematox.SRVCTRL.Port.readline()
+    kematox.SRVCTRL.Port.write("Q\r\n".encode())
+    resp_raw = kematox.SRVCTRL.Port.readline()
+    resp = resp_raw.decode()
     if resp == '.':
-        print ("FUNCT: SSC32-Servo controller found. Firmware version: " + version)
+        print ("FUNCT: SSC32-Servo controller found. Firmware version: " + version.decode())
         print ("FUNCT: Ready\n")
     else:
         print ("FUNCT: Servo controller not found, exiting...")

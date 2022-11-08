@@ -82,7 +82,7 @@ class SrvCtrl(object):
     def __init__(self, name):
         self.Name = name
         self.CmdBuf = ""
-        self.Port = serial.Serial('/dev/serial0', 115200, timeout = 0.06)              # LINUXHOZ: serial.Serial('/dev/ttyAMA0', 115200, timeout = 1) comport was 3
+        self.Port = serial.Serial('/dev/ttyAMA0', 115200, write_timeout = 1, timeout = 0.5)               # LINUXHOZ: serial.Serial('/dev/ttyAMA0', 115200, timeout = 1) comport was 3
 
     def SetToMove(self, cmd_string):
         """ A paraméterként megadott stringet mindíg hozzáadjuk a CmdBuf-hoz """
@@ -97,11 +97,11 @@ class SrvCtrl(object):
         if MoveTime == None:
             self.CmdBuf = self.CmdBuf + "T" + str(defMoveTime) + "\r\n"
             #print "SRVCTRL in: " + self.CmdBuf
-            self.Port.write(self.CmdBuf)
+            self.Port.write(self.CmdBuf.encode())
             if querry == "Poll":
                 print ("SSC32: Polling SRVCNTRL till movement finished... Using default movetime...")
                 while True:
-                    self.Port = "Q\r\n"
+                    self.Port.write("Q\r\n".encode())
                     resp = self.Port.readline()
                     print ("SRVCTRL out: " + resp)
                     if resp == ".":
@@ -113,11 +113,11 @@ class SrvCtrl(object):
         else:
             self.CmdBuf = self.CmdBuf + "T" + str(MoveTime) + "\r\n"
             #print "SRVCTRL in: " + self.CmdBuf
-            self.Port.write(self.CmdBuf)
+            self.Port.write(self.CmdBuf.encode())
             if querry == "Poll":
                 print ("SSC32: Polling SRVCNTRL movement finished... Using preset/calc. movetime")
                 while True:
-                    self.Port.write("Q\r\n")
+                    self.Port.write("Q\r\n".encode())
                     resp = self.Port.readline()
                     print ("SRVCTRL out: " + resp)
                     if resp == ".":

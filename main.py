@@ -8,8 +8,8 @@ Created on Wed Dec 20 15:47:59 2017
 @author: Rozsee
 """ 
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 import obj
 import funct
 import IK
