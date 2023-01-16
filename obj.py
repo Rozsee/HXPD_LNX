@@ -82,7 +82,7 @@ class SrvCtrl(object):
     def __init__(self, name):
         self.Name = name
         self.CmdBuf = ""
-        self.Port = serial.Serial('/dev/ttyAMA0', 115200, write_timeout = 1, timeout = 0.5)               # LINUXHOZ: serial.Serial('/dev/ttyAMA0', 115200, timeout = 1) comport was 3
+        self.Port = serial.Serial('/dev/ttyAMA0', 115200, write_timeout = 0.1, timeout = 0.1)               # LINUXHOZ: serial.Serial('/dev/ttyAMA0', 115200, timeout = 1) comport was 3
 
     def SetToMove(self, cmd_string):
         """ A paraméterként megadott stringet mindíg hozzáadjuk a CmdBuf-hoz """
@@ -99,32 +99,32 @@ class SrvCtrl(object):
             #print "SRVCTRL in: " + self.CmdBuf
             self.Port.write(self.CmdBuf.encode())
             if querry == "Poll":
-                print ("SSC32: Polling SRVCNTRL till movement finished... Using default movetime...")
+                #print ("SSC32: Polling SRVCNTRL till movement finished... Using default movetime...")
                 while True:
                     self.Port.write("Q\r\n".encode())
                     resp = self.Port.readline()
-                    print ("SRVCTRL out: " + resp)
-                    if resp == ".":
+                    print ("SRVCTRL out: " + resp.decode())
+                    if resp.decode() == ".":
                         break
                 self.CmdBuf = ""
             elif querry == "NoPoll":
-                print ("SSC32: Polling turned OFF! Using default movetime...")
+                #print ("SSC32: Polling turned OFF! Using default movetime...")
                 self.CmdBuf = ""
         else:
             self.CmdBuf = self.CmdBuf + "T" + str(MoveTime) + "\r\n"
             #print "SRVCTRL in: " + self.CmdBuf
             self.Port.write(self.CmdBuf.encode())
             if querry == "Poll":
-                print ("SSC32: Polling SRVCNTRL movement finished... Using preset/calc. movetime")
+                #print ("SSC32: Polling SRVCNTRL movement finished... Using preset/calc. movetime")
                 while True:
                     self.Port.write("Q\r\n".encode())
                     resp = self.Port.readline()
-                    print ("SRVCTRL out: " + resp)
-                    if resp == ".":
+                    print ("SRVCTRL out: " + resp.decode())
+                    if resp.decode() == ".":
                         break
                 self.CmdBuf = ""     
             elif querry == "NoPoll":
-                print ("SSC32: Polling turned OFF! Using preset/calc. movetime.")
+                #print ("SSC32: Polling turned OFF! Using preset/calc. movetime.")
                 self.CmdBuf = ""
 
 
